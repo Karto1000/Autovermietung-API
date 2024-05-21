@@ -25,8 +25,6 @@ public class AuthController {
 
     @PostMapping(value = "/login", consumes = "application/json", produces = "application/json")
     public SuccessResponse<String> login(@RequestBody LoginRequestDao loginRequestDao) throws RouteException {
-        jwtTokenGenerator.getToken(User.builder().id(1).email("admin@admin.com").role(Role.builder().id(1).name("test").build()).build());
-
         // TODO: This is a hardcoded admin user for testing purposes
         if (!loginRequestDao.getEmail().equals("admin@admin.com") || !loginRequestDao.getPassword().equals("admin")) {
             throw new RouteException("Invalid credentials", HttpStatus.UNAUTHORIZED);
