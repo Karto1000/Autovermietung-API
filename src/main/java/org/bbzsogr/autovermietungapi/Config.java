@@ -1,4 +1,4 @@
-package org.bbzsogr.autovermietungui;
+package org.bbzsogr.autovermietungapi;
 
 import io.github.cdimascio.dotenv.Dotenv;
 import org.springframework.boot.jdbc.DataSourceBuilder;

@@ -3,6 +3,8 @@ WORKDIR /app
 
 COPY . .
 
-RUN mvn clean package
+COPY --from=ghcr.io/ufoscout/docker-compose-wait:latest /wait /wait
 
-CMD ./mvnw spring-boot:run
+RUN mvn clean package -DskipTests
+
+CMD /wait && ./mvnw spring-boot:run
