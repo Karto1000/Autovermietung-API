@@ -3,6 +3,11 @@ package org.bbzsogr.autovermietungapi.model;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
+
+import java.awt.image.ImageProducer;
+import java.util.List;
 
 @Setter
 @Getter
@@ -27,7 +32,12 @@ public class Car {
 
     private byte[] picture;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne
     @JsonIgnore
     private Firm firm;
+
+    @OneToOne(mappedBy = "car", cascade = CascadeType.REMOVE)
+    @OnDelete(action = OnDeleteAction.CASCADE)
+    @JsonIgnore
+    private Rental rental;
 }

@@ -3,7 +3,6 @@ package org.bbzsogr.autovermietungapi.model;
 import jakarta.persistence.*;
 import lombok.*;
 
-import java.io.Serializable;
 
 @Setter
 @Getter
@@ -13,8 +12,15 @@ import java.io.Serializable;
 @ToString
 @Entity
 public class Rental {
-    @EmbeddedId
-    private RentalId id;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Integer id;
+
+    @ManyToOne
+    private User user;
+
+    @OneToOne
+    private Car car;
 
     @Column(nullable = false)
     private Integer start;

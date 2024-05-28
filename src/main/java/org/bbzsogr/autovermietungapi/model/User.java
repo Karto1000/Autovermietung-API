@@ -1,7 +1,12 @@
 package org.bbzsogr.autovermietungapi.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
+
+import java.util.List;
 
 @Setter
 @Getter
@@ -20,4 +25,13 @@ public class User {
 
     @ManyToOne
     private Role role;
+
+    @OneToOne(mappedBy = "user", cascade = CascadeType.REMOVE)
+    @OnDelete(action = OnDeleteAction.CASCADE)
+    @JsonIgnore
+    private Firm firm;
+
+    @OneToMany(mappedBy = "user", cascade = CascadeType.REMOVE)
+    @JsonIgnore
+    private List<Rental> rentals;
 }

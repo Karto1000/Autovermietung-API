@@ -44,7 +44,7 @@ public class CarController {
 
         Car car = carDTO.intoEntity();
 
-        Firm firm = firmRepository.findByEmail(claims.getEmail()).orElseThrow(() -> new RouteException("User not found", HttpStatus.NOT_FOUND));
+        Firm firm = firmRepository.findByEmail(claims.getEmail()).orElseThrow(() -> new RouteException("Firm not found", HttpStatus.NOT_FOUND));
         car.setFirm(firm);
 
         try {
@@ -136,11 +136,8 @@ public class CarController {
         Rental rental = Rental.builder()
                 .start(rentDTO.getStart())
                 .end(rentDTO.getEnd())
-                .id(RentalId.builder()
-                        .car(car)
-                        .user(user)
-                        .build()
-                )
+                .car(car)
+                .user(user)
                 .build();
 
         try {
