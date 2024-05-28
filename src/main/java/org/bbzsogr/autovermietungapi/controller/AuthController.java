@@ -6,9 +6,9 @@ import org.bbzsogr.autovermietungapi.exceptions.RouteException;
 import org.bbzsogr.autovermietungapi.model.Role;
 import org.bbzsogr.autovermietungapi.model.User;
 import org.bbzsogr.autovermietungapi.repository.UserRepository;
-import org.bbzsogr.autovermietungapi.utils.SuccessResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -24,7 +24,7 @@ public class AuthController {
     private UserRepository userRepository;
 
     @PostMapping(value = "/login", consumes = "application/json", produces = "application/json")
-    public SuccessResponse<String> login(@RequestBody LoginRequestDao loginRequestDao) throws RouteException {
+    public ResponseEntity<String> login(@RequestBody LoginRequestDao loginRequestDao) throws RouteException {
         // TODO: This is a hardcoded admin user for testing purposes
         if (!loginRequestDao.getEmail().equals("admin@admin.com") || !loginRequestDao.getPassword().equals("admin")) {
             throw new RouteException("Invalid credentials", HttpStatus.UNAUTHORIZED);
@@ -33,6 +33,6 @@ public class AuthController {
         User user = userRepository.findByEmail(loginRequestDao.getEmail());
         if (user == null) throw new RouteException("Invalid credentials", HttpStatus.UNAUTHORIZED);
 
-        return SuccessResponse.ok(jwtTokenGenerator.getToken(user));
+        return ResponseEntity.ok(jwtTokenGenerator.getToken(user));
     }
 }
