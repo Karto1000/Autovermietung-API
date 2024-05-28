@@ -30,7 +30,7 @@ public class AuthController {
             throw new RouteException("Invalid credentials", HttpStatus.UNAUTHORIZED);
         }
 
-        User user = userRepository.findByEmail(loginRequestDao.getEmail());
+        User user = userRepository.findByEmail(loginRequestDao.getEmail()).orElseThrow(() -> new RouteException("Invalid credentials", HttpStatus.UNAUTHORIZED));
         if (user == null) throw new RouteException("Invalid credentials", HttpStatus.UNAUTHORIZED);
 
         return ResponseEntity.ok(jwtTokenGenerator.getToken(user));

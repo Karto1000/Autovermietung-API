@@ -13,6 +13,7 @@ import java.util.List;
 @Builder
 public class Claims {
     private String[] permissions;
+    private String email;
 
     public boolean hasPermission(String permission) {
         List<String> permissions = Arrays.stream(this.permissions).toList();

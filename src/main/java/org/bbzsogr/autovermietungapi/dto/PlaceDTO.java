@@ -10,13 +10,12 @@ import org.bbzsogr.autovermietungapi.model.Place;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-@ToString
 public class PlaceDTO implements IntoEntity<Place> {
-    @NotNull
-    @NotBlank
+    @NotNull(message = "Name is required")
+    @NotBlank(message = "Name must not be blank")
     private String name;
 
-    @NotNull
+    @NotNull(message = "PLZ is required")
     private Integer plz;
 
     @Override

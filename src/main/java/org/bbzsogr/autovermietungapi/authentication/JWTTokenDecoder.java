@@ -36,6 +36,7 @@ public class JWTTokenDecoder implements TokenDecoder<Claims> {
 
         Claims claims = Claims.builder()
                 .permissions(decodedJWT.getClaim("permissions").asArray(String.class))
+                .email(decodedJWT.getClaim("email").asString())
                 .build();
 
         return Optional.of(claims);
