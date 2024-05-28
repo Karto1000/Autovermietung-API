@@ -6,7 +6,10 @@ import org.bbzsogr.autovermietungapi.authentication.JWTTokenDecoder;
 import org.bbzsogr.autovermietungapi.dto.CarDTO;
 import org.bbzsogr.autovermietungapi.dto.RentDTO;
 import org.bbzsogr.autovermietungapi.exceptions.RouteException;
-import org.bbzsogr.autovermietungapi.model.*;
+import org.bbzsogr.autovermietungapi.model.Car;
+import org.bbzsogr.autovermietungapi.model.Firm;
+import org.bbzsogr.autovermietungapi.model.Rental;
+import org.bbzsogr.autovermietungapi.model.User;
 import org.bbzsogr.autovermietungapi.repository.CarRepository;
 import org.bbzsogr.autovermietungapi.repository.FirmRepository;
 import org.bbzsogr.autovermietungapi.repository.RentalRepository;
@@ -96,9 +99,27 @@ public class CarController {
         return ResponseEntity.ok(car);
     }
 
-    @GetMapping("/")
-    public void search() {
-        // TODO
+    @GetMapping("")
+    public ResponseEntity<Iterable<Car>> search(
+            @RequestParam String brand,
+            @RequestParam String model,
+            @RequestHeader("Authorization") String bearer
+    ) throws RouteException {
+        Claims claims = tokenDecoder
+                .decode(bearer)
+                .orElseThrow(() -> new RouteException("Invalid token", HttpStatus.UNAUTHORIZED));
+
+        if (!claims.hasPermission("view:car")) throw new RouteException(
+                "Permission denied",
+                HttpStatus.FORBIDDEN
+        );
+
+        try {
+            Iterable<Car> cars = carRepository.search(brand, model);
+            return ResponseEntity.ok(cars);
+        } catch (Exception e) {
+            throw new RouteException("Failed to search cars", HttpStatus.BAD_REQUEST);
+        }
     }
 
     @PostMapping(value = "/{id}/rent", consumes = "application/json")

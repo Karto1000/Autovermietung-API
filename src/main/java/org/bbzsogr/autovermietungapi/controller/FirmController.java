@@ -4,7 +4,9 @@ package org.bbzsogr.autovermietungapi.controller;
 import org.bbzsogr.autovermietungapi.authentication.Claims;
 import org.bbzsogr.autovermietungapi.authentication.JWTTokenDecoder;
 import org.bbzsogr.autovermietungapi.exceptions.RouteException;
+import org.bbzsogr.autovermietungapi.model.Firm;
 import org.bbzsogr.autovermietungapi.model.User;
+import org.bbzsogr.autovermietungapi.repository.FirmRepository;
 import org.bbzsogr.autovermietungapi.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -19,6 +21,9 @@ public class FirmController {
 
     @Autowired
     private UserRepository userRepository;
+
+    @Autowired
+    private FirmRepository firmRepository;
 
     @DeleteMapping("/{id}")
     public ResponseEntity<String> delete(
@@ -58,8 +63,30 @@ public class FirmController {
         }
     }
 
-    @GetMapping("/")
-    public void search() {
-        // TODO
+    @GetMapping("")
+    public ResponseEntity<Iterable<Firm>> search(
+            @RequestParam String name,
+            @RequestHeader("Authorization") String bearer
+    ) throws RouteException {
+        Claims claims = tokenDecoder
+                .decode(bearer)
+                .orElseThrow(() -> new RouteException("Invalid token", HttpStatus.UNAUTHORIZED));
+
+        if (!claims.hasPermission("view:firm")) throw new RouteException(
+                "Permission denied",
+                HttpStatus.FORBIDDEN
+        );
+
+        try {
+            Iterable<Firm> firms = firmRepository.search(name);
+            return ResponseEntity.ok(firms);
+        } catch (Exception e) {
+            throw new RouteException(
+                    "Failed to search firms",
+                    HttpStatus.INTERNAL_SERVER_ERROR
+            );
+        }
+
+
     }
 }

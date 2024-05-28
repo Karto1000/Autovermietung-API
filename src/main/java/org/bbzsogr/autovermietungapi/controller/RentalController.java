@@ -60,8 +60,28 @@ public class RentalController {
         }
     }
 
-    @GetMapping("/")
-    public void search() {
-        // TODO
+    @GetMapping("")
+    public Iterable<Rental> search(
+            @RequestParam Integer start,
+            @RequestParam Integer end,
+            @RequestParam String carModel,
+            @RequestHeader("Authorization") String bearer
+    ) throws RouteException {
+        Claims claims = tokenDecoder.decode(bearer).orElseThrow(() -> new RouteException("Invalid token", HttpStatus.UNAUTHORIZED));
+        if (!claims.hasPermission("view:rental")) throw new RouteException("Permission denied", HttpStatus.FORBIDDEN);
+
+        User user = userRepository
+                .findByEmail(claims.getEmail())
+                .orElseThrow(() -> new RouteException("User not found", HttpStatus.NOT_FOUND));
+
+        try {
+            return rentalRepository.search(start, end, carModel, user.getId());
+        } catch (Exception e) {
+            throw new RouteException(
+                    "Error while searching rentals",
+                    HttpStatus.INTERNAL_SERVER_ERROR
+            );
+        }
+
     }
 }
