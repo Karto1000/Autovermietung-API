@@ -12,7 +12,7 @@ import org.springframework.context.annotation.Profile;
 public class TestConfiguration {
     @Bean
     @Primary
-    public JWTTokenDecoder nameService() {
+    public JWTTokenDecoder jwtTokenDecoder() {
         return Mockito.mock(JWTTokenDecoder.class);
     }
 }
