@@ -14,7 +14,9 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.MvcResult;
 
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
@@ -172,15 +174,48 @@ class PlaceControllerTest {
      * T34
      */
     @Test
-    public void testViewPlaceValid() {
+    public void testViewPlaceValid() throws Exception {
+        Claims claims = Claims.builder()
+                .email("admin@admin.com")
+                .permissions(new String[]{"view:place"})
+                .build();
 
+        Place place = Place.builder().id(1).name("Test").plz(4500).build();
+
+        Mockito.when(tokenDecoder.decode(any())).thenReturn(Optional.of(claims));
+        Mockito.when(placeRepository.findAll()).thenReturn(Collections.singletonList(place));
+
+        MvcResult result = mockMvc.perform(get("/places")
+                        .header("Authorization", "Bearer test"))
+                .andExpect(status().isOk())
+                .andReturn();
+
+        Place[] places = new ObjectMapper().readValue(result.getResponse().getContentAsString(), Place[].class);
+
+        assert places.length == 1;
+        assert places[0].equals(place);
     }
 
     /**
      * T35
      */
     @Test
-    public void testViewPlaceInvalid() {
+    public void testViewPlaceInvalid() throws Exception {
+        Claims claims = Claims.builder()
+                .email("admin@admin.com")
+                .permissions(new String[]{"view:place"})
+                .build();
 
+        Mockito.when(tokenDecoder.decode(any())).thenReturn(Optional.of(claims));
+        Mockito.when(placeRepository.findAll()).thenReturn(Collections.emptyList());
+
+        MvcResult result = mockMvc.perform(get("/places")
+                        .header("Authorization", "Bearer test"))
+                .andExpect(status().isOk())
+                .andReturn();
+
+        Place[] places = new ObjectMapper().readValue(result.getResponse().getContentAsString(), Place[].class);
+
+        assert places.length == 0;
     }
 }

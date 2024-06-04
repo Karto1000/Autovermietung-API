@@ -40,4 +40,12 @@ public class Car {
     @OnDelete(action = OnDeleteAction.CASCADE)
     @JsonIgnore
     private Rental rental;
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) return true;
+        if (obj == null || getClass() != obj.getClass()) return false;
+        Car car = (Car) obj;
+        return id.equals(car.id);
+    }
 }

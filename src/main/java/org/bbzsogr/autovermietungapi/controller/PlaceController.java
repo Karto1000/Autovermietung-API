@@ -77,7 +77,7 @@ public class PlaceController {
             @RequestHeader("Authorization") String bearer
     ) throws RouteException {
         Claims claims = tokenValidator.decode(bearer).orElseThrow(() -> new RouteException("Invalid token", HttpStatus.UNAUTHORIZED));
-        if (!claims.hasPermission("read:place")) throw new RouteException("Permission denied", HttpStatus.FORBIDDEN);
+        if (!claims.hasPermission("view:place")) throw new RouteException("Permission denied", HttpStatus.FORBIDDEN);
 
         return ResponseEntity.ok(placeRepository.findAll());
     }

@@ -20,4 +20,11 @@ public class Place {
 
     @Column(nullable = false)
     private Integer plz;
+
+    @Override
+    public boolean equals(Object obj) {
+        if (obj == this) return true;
+        if (!(obj instanceof Place place)) return false;
+        return place.getId().equals(this.getId());
+    }
 }

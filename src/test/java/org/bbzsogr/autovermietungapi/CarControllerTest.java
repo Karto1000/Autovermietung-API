@@ -18,7 +18,9 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.MvcResult;
 
+import java.util.Collections;
 import java.util.Optional;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
@@ -244,7 +246,30 @@ class CarControllerTest {
      */
     @Test
     public void testSearchForCarValid() throws Exception {
+        Claims claims = Claims.builder()
+                .email("admin@admin.com")
+                .permissions(new String[]{"view:car"})
+                .build();
 
+        Car car = Car.builder()
+                .id(1)
+                .brand("BMW")
+                .model("X5")
+                .pricePerHour(10.)
+                .build();
+
+        Mockito.when(tokenDecoder.decode("Bearer test")).thenReturn(Optional.of(claims));
+        Mockito.when(carRepository.search("BMW", "X5")).thenReturn(Collections.singletonList(car));
+
+        MvcResult result = mockMvc.perform(get("/cars?brand=BMW&model=X5")
+                        .header("Authorization", "Bearer test"))
+                .andExpect(status().isOk())
+                .andReturn();
+
+        Car[] cars = new ObjectMapper().readValue(result.getResponse().getContentAsString(), Car[].class);
+
+        assert cars.length == 1;
+        assert cars[0].equals(car);
     }
 
     /**
@@ -252,7 +277,22 @@ class CarControllerTest {
      */
     @Test
     public void testSearchForCarInvalid() throws Exception {
+        Claims claims = Claims.builder()
+                .email("admin@admin.com")
+                .permissions(new String[]{"view:car"})
+                .build();
 
+        Mockito.when(tokenDecoder.decode("Bearer test")).thenReturn(Optional.of(claims));
+        Mockito.when(carRepository.search("BMW", "X5")).thenReturn(Collections.emptyList());
+
+        MvcResult result = mockMvc.perform(get("/cars?brand=BMW&model=X5")
+                        .header("Authorization", "Bearer test"))
+                .andExpect(status().isOk())
+                .andReturn();
+
+        Car[] cars = new ObjectMapper().readValue(result.getResponse().getContentAsString(), Car[].class);
+
+        assert cars.length == 0;
     }
 
     /**

@@ -36,4 +36,13 @@ public class Firm {
     @JoinColumn(name = "firm_id")
     @JsonIgnore
     private List<Car> cars;
+
+    @Override
+    public boolean equals(Object obj) {
+        if (obj == null) return false;
+        if (this == obj) return true;
+        if (this.getClass() != obj.getClass()) return false;
+        Firm firm = (Firm) obj;
+        return this.id.equals(firm.id);
+    }
 }

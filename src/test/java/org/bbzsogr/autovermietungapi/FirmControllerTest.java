@@ -1,9 +1,12 @@
 package org.bbzsogr.autovermietungapi;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.bbzsogr.autovermietungapi.authentication.Claims;
 import org.bbzsogr.autovermietungapi.authentication.JWTTokenDecoder;
+import org.bbzsogr.autovermietungapi.model.Firm;
 import org.bbzsogr.autovermietungapi.model.Role;
 import org.bbzsogr.autovermietungapi.model.User;
+import org.bbzsogr.autovermietungapi.repository.FirmRepository;
 import org.bbzsogr.autovermietungapi.repository.UserRepository;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
@@ -13,10 +16,13 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.MvcResult;
 
+import java.util.Collections;
 import java.util.Optional;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @ActiveProfiles("test")
@@ -30,13 +36,34 @@ class FirmControllerTest {
     @Autowired
     @MockBean
     private UserRepository userRepository;
+    @Autowired
+    @MockBean
+    private FirmRepository firmRepository;
 
     /**
      * T36
      */
     @Test
     public void testViewFirmsValid() throws Exception {
+        Claims claims = Claims.builder()
+                .email("admin@admin.com")
+                .permissions(new String[]{"view:firm"})
+                .build();
 
+        Firm firm = Firm.builder().id(1).name("Test").build();
+
+        Mockito.when(tokenDecoder.decode("Bearer test")).thenReturn(Optional.of(claims));
+        Mockito.when(firmRepository.search("Test")).thenReturn(Collections.singletonList(firm));
+
+        MvcResult result = mockMvc.perform(get("/firms?name=Test")
+                        .header("Authorization", "Bearer test"))
+                .andExpect(status().isOk())
+                .andReturn();
+
+        Firm[] firms = new ObjectMapper().readValue(result.getResponse().getContentAsString(), Firm[].class);
+
+        assert firms.length == 1;
+        assert firms[0].equals(firm);
     }
 
     /**
@@ -44,7 +71,22 @@ class FirmControllerTest {
      */
     @Test
     public void testViewFirmsInvalid() throws Exception {
+        Claims claims = Claims.builder()
+                .email("admin@admin.com")
+                .permissions(new String[]{"view:firm"})
+                .build();
 
+        Mockito.when(tokenDecoder.decode("Bearer test")).thenReturn(Optional.of(claims));
+        Mockito.when(firmRepository.search("Awd")).thenReturn(Collections.emptyList());
+
+        MvcResult result = mockMvc.perform(get("/firms?name=Awd")
+                        .header("Authorization", "Bearer test"))
+                .andExpect(status().isOk())
+                .andReturn();
+
+        Firm[] firms = new ObjectMapper().readValue(result.getResponse().getContentAsString(), Firm[].class);
+
+        assert firms.length == 0;
     }
 
     /**

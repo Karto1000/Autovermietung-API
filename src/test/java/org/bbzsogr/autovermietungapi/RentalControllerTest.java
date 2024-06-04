@@ -1,5 +1,6 @@
 package org.bbzsogr.autovermietungapi;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.bbzsogr.autovermietungapi.authentication.Claims;
 import org.bbzsogr.autovermietungapi.authentication.JWTTokenDecoder;
 import org.bbzsogr.autovermietungapi.model.Car;
@@ -17,10 +18,13 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.MvcResult;
 
+import java.util.Collections;
 import java.util.Optional;
 
 import static org.mockito.ArgumentMatchers.any;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -122,7 +126,41 @@ class RentalControllerTest {
      */
     @Test
     public void testViewRentalsValid() throws Exception {
+        Claims claims = Claims.builder()
+                .email("admin@admin.com")
+                .permissions(new String[]{"view:rental"})
+                .build();
 
+        User user = User.builder()
+                .id(1)
+                .email("admin@admin.com")
+                .role(Role.builder().id(1).name("admin").build())
+                .build();
+
+        Rental rental = Rental.builder()
+                .id(1)
+                .end(1)
+                .start(2)
+                .car(Car.builder().model("Test").build())
+                .user(user)
+                .build();
+
+        Mockito.when(tokenDecoder.decode(any())).thenReturn(Optional.of(claims));
+        Mockito.when(userRepository.findByEmail("admin@admin.com")).thenReturn(Optional.of(user));
+        Mockito.when(rentalRepository.search(1, 2, "Test", 1)).thenReturn(Collections.singletonList(rental));
+
+        MvcResult result = mockMvc.perform(get("/rentals")
+                        .param("start", "1")
+                        .param("end", "2")
+                        .param("carModel", "Test")
+                        .header("Authorization", "Bearer test"))
+                .andExpect(status().isOk())
+                .andReturn();
+
+        Rental[] rentals = new ObjectMapper().readValue(result.getResponse().getContentAsString(), Rental[].class);
+
+        assert rentals.length == 1;
+        assert rentals[0].equals(rental);
     }
 
 
@@ -131,6 +169,31 @@ class RentalControllerTest {
      */
     @Test
     public void testViewRentalsInvalid() throws Exception {
+        Claims claims = Claims.builder()
+                .email("admin@admin.com")
+                .permissions(new String[]{"view:rental"})
+                .build();
 
+        User user = User.builder()
+                .id(1)
+                .email("admin@admin.com")
+                .role(Role.builder().id(1).name("admin").build())
+                .build();
+
+        Mockito.when(tokenDecoder.decode(any())).thenReturn(Optional.of(claims));
+        Mockito.when(userRepository.findByEmail("admin@admin.com")).thenReturn(Optional.of(user));
+        Mockito.when(rentalRepository.search(1, 2, "Test", 1)).thenReturn(Collections.emptyList());
+
+        MvcResult result = mockMvc.perform(get("/rentals")
+                        .param("start", "1")
+                        .param("end", "2")
+                        .param("carModel", "Test")
+                        .header("Authorization", "Bearer test"))
+                .andExpect(status().isOk())
+                .andReturn();
+
+        Rental[] rentals = new ObjectMapper().readValue(result.getResponse().getContentAsString(), Rental[].class);
+
+        assert rentals.length == 0;
     }
 }
