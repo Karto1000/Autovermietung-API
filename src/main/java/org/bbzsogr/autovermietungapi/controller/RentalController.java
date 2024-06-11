@@ -14,6 +14,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Optional;
+
 @RestController
 @RequestMapping("/rentals")
 public class RentalController {
@@ -62,8 +64,8 @@ public class RentalController {
 
     @GetMapping("")
     public Iterable<Rental> search(
-            @RequestParam Integer start,
-            @RequestParam Integer end,
+            @RequestParam Optional<Integer> startOptional,
+            @RequestParam Optional<Integer> endOptional,
             @RequestParam String carModel,
             @RequestHeader("Authorization") String bearer
     ) throws RouteException {
@@ -73,6 +75,9 @@ public class RentalController {
         User user = userRepository
                 .findByEmail(claims.getEmail())
                 .orElseThrow(() -> new RouteException("User not found", HttpStatus.NOT_FOUND));
+
+        Integer start = startOptional.orElse(0);
+        Integer end = endOptional.orElse(Integer.MAX_VALUE);
 
         try {
             return rentalRepository.search(start, end, carModel, user.getId());
