@@ -11,7 +11,8 @@ VALUES (1, 'create:car'),
        (10, 'edit:place'),
        (11, 'view:place'),
        (13, 'delete:rental'),
-       (15, 'view:rental');
+       (15, 'view:rental'),
+       (16, 'view:carNotRented');
 
 INSERT INTO role (id, name)
 VALUES (1, 'admin'),
@@ -39,14 +40,14 @@ VALUES (2, 4),
        (2, 5),
        (2, 7),
        (2, 11),
-       (2, 15);
+       (2, 15),
+       (2, 16);
 
 # Firm
 INSERT INTO role_permission (role_id, permission_id)
 VALUES (3, 1),
        (3, 2),
        (3, 4),
-       (3, 5),
        (3, 7),
        (3, 11),
        (3, 15);

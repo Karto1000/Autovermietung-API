@@ -35,7 +35,6 @@ public class Car {
     private byte[] picture;
 
     @ManyToOne
-    @JsonIgnore
     private Firm firm;
 
     @OneToOne(mappedBy = "car", cascade = CascadeType.REMOVE)

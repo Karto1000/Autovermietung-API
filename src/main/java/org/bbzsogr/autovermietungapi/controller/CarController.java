@@ -122,6 +122,29 @@ public class CarController {
         }
     }
 
+    @GetMapping("/not-rented")
+    public ResponseEntity<Iterable<Car>> searchNotRented(
+            @RequestParam String brand,
+            @RequestParam String model,
+            @RequestHeader("Authorization") String bearer
+    ) throws RouteException {
+        Claims claims = tokenDecoder
+                .decode(bearer)
+                .orElseThrow(() -> new RouteException("Invalid token", HttpStatus.UNAUTHORIZED));
+
+        if (!claims.hasPermission("view:carNotRented")) throw new RouteException(
+                "Permission denied",
+                HttpStatus.FORBIDDEN
+        );
+
+        try {
+            Iterable<Car> cars = carRepository.searchNotRented(brand, model);
+            return ResponseEntity.ok(cars);
+        } catch (Exception e) {
+            throw new RouteException("Failed to search cars", HttpStatus.BAD_REQUEST);
+        }
+    }
+
     @PostMapping(value = "/{id}/rent", consumes = "application/json")
     public ResponseEntity<Rental> rent(
             @PathVariable Integer id,
