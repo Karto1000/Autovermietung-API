@@ -30,7 +30,7 @@ public class CarDTO implements IntoEntity<Car> {
                 .brand(brand)
                 .model(model)
                 .pricePerHour(pricePerHour)
-                .picture(picture.getBytes())
+                .picture(picture != null ? picture.getBytes() : null)
                 .build();
     }
 }

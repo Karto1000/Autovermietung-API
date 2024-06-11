@@ -44,6 +44,7 @@ VALUES (2, 4),
 # Firm
 INSERT INTO role_permission (role_id, permission_id)
 VALUES (3, 1),
+       (3, 2),
        (3, 4),
        (3, 5),
        (3, 7),
