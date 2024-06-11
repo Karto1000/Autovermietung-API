@@ -28,27 +28,16 @@ public class RentalController {
     @Autowired
     private UserRepository userRepository;
 
-    @Autowired
-    private CarRepository carRepository;
-
-    @PutMapping("/{carId}/cancel")
+    @PutMapping("/{rentalId}/cancel")
     public ResponseEntity<String> cancel(
-            @PathVariable Integer carId,
+            @PathVariable Integer rentalId,
             @RequestHeader("Authorization") String bearer
     ) throws RouteException {
         Claims claims = tokenDecoder.decode(bearer).orElseThrow(() -> new RouteException("Invalid token", HttpStatus.UNAUTHORIZED));
         if (!claims.hasPermission("delete:rental")) throw new RouteException("Permission denied", HttpStatus.FORBIDDEN);
 
-        User user = userRepository
-                .findByEmail(claims.getEmail())
-                .orElseThrow(() -> new RouteException("User not found", HttpStatus.NOT_FOUND));
-
-        Car car = carRepository
-                .findById(carId)
-                .orElseThrow(() -> new RouteException("Car not found", HttpStatus.NOT_FOUND));
-
         Rental rental = rentalRepository
-                .findByCarIdAndUserId(car.getId(), user.getId())
+                .findById(rentalId)
                 .orElseThrow(() -> new RouteException("Rental not found", HttpStatus.NOT_FOUND));
 
         try {
