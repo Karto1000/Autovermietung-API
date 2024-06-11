@@ -14,9 +14,19 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.lang.reflect.Array;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+
 @RestController
 @RequestMapping("/auth")
 public class AuthController {
+    // TODO: These are hardcoded users for testing purposes
+    private static final List<String> validEmails = Arrays.asList("admin@admin.com", "user@user.com", "firm@firm.com");
+    private static final List<String> validPasswords = Arrays.asList("admin", "user", "firm");
+
     @Autowired
     private JWTTokenGenerator jwtTokenGenerator;
 
@@ -25,8 +35,7 @@ public class AuthController {
 
     @PostMapping(value = "/login", consumes = "application/json", produces = "application/json")
     public ResponseEntity<String> login(@RequestBody LoginRequestDao loginRequestDao) throws RouteException {
-        // TODO: This is a hardcoded admin user for testing purposes
-        if (!loginRequestDao.getEmail().equals("admin@admin.com") || !loginRequestDao.getPassword().equals("admin")) {
+        if (!validEmails.contains(loginRequestDao.getEmail()) || !validPasswords.contains(loginRequestDao.getPassword())) {
             throw new RouteException("Invalid credentials", HttpStatus.UNAUTHORIZED);
         }
 

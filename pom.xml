@@ -11,8 +11,8 @@
     <groupId>org.bbzsogr</groupId>
     <artifactId>autovermietung-api</artifactId>
     <version>0.0.1-SNAPSHOT</version>
-    <name>autovermietung-ui</name>
-    <description>autovermietung-ui</description>
+    <name>autovermietung-api</name>
+    <description>autovermietung-api</description>
     <properties>
         <java.version>21</java.version>
     </properties>

@@ -22,7 +22,7 @@ public class CarDTO implements IntoEntity<Car> {
     @NotNull(message = "Price per hour is required")
     private Double pricePerHour;
 
-    private byte[] picture;
+    private String picture;
 
     @Override
     public Car intoEntity() {
@@ -30,7 +30,7 @@ public class CarDTO implements IntoEntity<Car> {
                 .brand(brand)
                 .model(model)
                 .pricePerHour(pricePerHour)
-                .picture(picture)
+                .picture(picture.getBytes())
                 .build();
     }
 }
