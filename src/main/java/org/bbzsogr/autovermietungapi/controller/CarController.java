@@ -87,8 +87,13 @@ public class CarController {
 
         if (!carRepository.existsById(id)) throw new RouteException("Car not found", HttpStatus.NOT_FOUND);
 
-        Car car = newCar.intoEntity();
-        car.setId(id);
+        Car car = carRepository
+                .findById(id)
+                .orElseThrow(() -> new RouteException("Car not found", HttpStatus.NOT_FOUND));
+
+        car.setBrand(newCar.getBrand());
+        car.setModel(newCar.getModel());
+        car.setPricePerHour(newCar.getPricePerHour());
 
         try {
             carRepository.save(car);
@@ -101,8 +106,7 @@ public class CarController {
 
     @GetMapping("")
     public ResponseEntity<Iterable<Car>> search(
-            @RequestParam String brand,
-            @RequestParam String model,
+            @RequestParam String q,
             @RequestHeader("Authorization") String bearer
     ) throws RouteException {
         Claims claims = tokenDecoder
@@ -115,7 +119,7 @@ public class CarController {
         );
 
         try {
-            Iterable<Car> cars = carRepository.search(brand, model);
+            Iterable<Car> cars = carRepository.search(q);
             return ResponseEntity.ok(cars);
         } catch (Exception e) {
             throw new RouteException("Failed to search cars", HttpStatus.BAD_REQUEST);
@@ -124,8 +128,7 @@ public class CarController {
 
     @GetMapping("/not-rented")
     public ResponseEntity<Iterable<Car>> searchNotRented(
-            @RequestParam String brand,
-            @RequestParam String model,
+            @RequestParam String q,
             @RequestHeader("Authorization") String bearer
     ) throws RouteException {
         Claims claims = tokenDecoder
@@ -138,7 +141,7 @@ public class CarController {
         );
 
         try {
-            Iterable<Car> cars = carRepository.searchNotRented(brand, model);
+            Iterable<Car> cars = carRepository.searchNotRented(q);
             return ResponseEntity.ok(cars);
         } catch (Exception e) {
             throw new RouteException("Failed to search cars", HttpStatus.BAD_REQUEST);
