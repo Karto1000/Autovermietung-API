@@ -53,9 +53,7 @@ public class RentalController {
 
     @GetMapping("")
     public Iterable<Rental> search(
-            @RequestParam Optional<Integer> start,
-            @RequestParam Optional<Integer> end,
-            @RequestParam String carModel,
+            @RequestParam String q,
             @RequestHeader("Authorization") String bearer
     ) throws RouteException {
         Claims claims = tokenDecoder.decode(bearer).orElseThrow(() -> new RouteException("Invalid token", HttpStatus.UNAUTHORIZED));
@@ -65,11 +63,8 @@ public class RentalController {
                 .findByEmail(claims.getEmail())
                 .orElseThrow(() -> new RouteException("User not found", HttpStatus.NOT_FOUND));
 
-        Integer unpackedStart = start.orElse(0);
-        Integer unpackedEnd = end.orElse(Integer.MAX_VALUE);
-
         try {
-            return rentalRepository.search(unpackedStart, unpackedEnd, carModel, user.getId());
+            return rentalRepository.search(q, user.getId());
         } catch (Exception e) {
             throw new RouteException(
                     "Error while searching rentals",

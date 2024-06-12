@@ -183,9 +183,9 @@ class PlaceControllerTest {
         Place place = Place.builder().id(1).name("Test").plz(4500).build();
 
         Mockito.when(tokenDecoder.decode(any())).thenReturn(Optional.of(claims));
-        Mockito.when(placeRepository.findAll()).thenReturn(Collections.singletonList(place));
+        Mockito.when(placeRepository.search("Test")).thenReturn(Collections.singletonList(place));
 
-        MvcResult result = mockMvc.perform(get("/places")
+        MvcResult result = mockMvc.perform(get("/places?q=Test")
                         .header("Authorization", "Bearer test"))
                 .andExpect(status().isOk())
                 .andReturn();
@@ -207,9 +207,9 @@ class PlaceControllerTest {
                 .build();
 
         Mockito.when(tokenDecoder.decode(any())).thenReturn(Optional.of(claims));
-        Mockito.when(placeRepository.findAll()).thenReturn(Collections.emptyList());
+        Mockito.when(placeRepository.search("Test")).thenReturn(Collections.emptyList());
 
-        MvcResult result = mockMvc.perform(get("/places")
+        MvcResult result = mockMvc.perform(get("/places?q=Test")
                         .header("Authorization", "Bearer test"))
                 .andExpect(status().isOk())
                 .andReturn();

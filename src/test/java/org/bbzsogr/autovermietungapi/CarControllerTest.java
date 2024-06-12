@@ -195,6 +195,7 @@ class CarControllerTest {
         Mockito.when(firmRepository.findByEmail(claims.getEmail())).thenReturn(Optional.of(firm));
         Mockito.when(tokenDecoder.decode("Bearer test")).thenReturn(Optional.of(claims));
         Mockito.when(carRepository.existsById(1)).thenReturn(true);
+        Mockito.when(carRepository.findById(1)).thenReturn(Optional.of(car));
         Mockito.when(carRepository.save(Mockito.any())).thenReturn(car);
 
         mockMvc.perform(put(String.format("/cars/%d", 1))
@@ -259,9 +260,9 @@ class CarControllerTest {
                 .build();
 
         Mockito.when(tokenDecoder.decode("Bearer test")).thenReturn(Optional.of(claims));
-        Mockito.when(carRepository.search("BMW", "X5")).thenReturn(Collections.singletonList(car));
+        Mockito.when(carRepository.search("BMW")).thenReturn(Collections.singletonList(car));
 
-        MvcResult result = mockMvc.perform(get("/cars?brand=BMW&model=X5")
+        MvcResult result = mockMvc.perform(get("/cars?q=BMW")
                         .header("Authorization", "Bearer test"))
                 .andExpect(status().isOk())
                 .andReturn();
@@ -283,9 +284,9 @@ class CarControllerTest {
                 .build();
 
         Mockito.when(tokenDecoder.decode("Bearer test")).thenReturn(Optional.of(claims));
-        Mockito.when(carRepository.search("BMW", "X5")).thenReturn(Collections.emptyList());
+        Mockito.when(carRepository.search("BMW")).thenReturn(Collections.emptyList());
 
-        MvcResult result = mockMvc.perform(get("/cars?brand=BMW&model=X5")
+        MvcResult result = mockMvc.perform(get("/cars?q=BMW")
                         .header("Authorization", "Bearer test"))
                 .andExpect(status().isOk())
                 .andReturn();

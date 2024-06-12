@@ -138,12 +138,10 @@ class RentalControllerTest {
 
         Mockito.when(tokenDecoder.decode(any())).thenReturn(Optional.of(claims));
         Mockito.when(userRepository.findByEmail("admin@admin.com")).thenReturn(Optional.of(user));
-        Mockito.when(rentalRepository.search(1, 2, "Test", 1)).thenReturn(Collections.singletonList(rental));
+        Mockito.when(rentalRepository.search("Test", 1)).thenReturn(Collections.singletonList(rental));
 
         MvcResult result = mockMvc.perform(get("/rentals")
-                        .param("start", "1")
-                        .param("end", "2")
-                        .param("carModel", "Test")
+                        .param("q", "Test")
                         .header("Authorization", "Bearer test"))
                 .andExpect(status().isOk())
                 .andReturn();
@@ -173,12 +171,10 @@ class RentalControllerTest {
 
         Mockito.when(tokenDecoder.decode(any())).thenReturn(Optional.of(claims));
         Mockito.when(userRepository.findByEmail("admin@admin.com")).thenReturn(Optional.of(user));
-        Mockito.when(rentalRepository.search(1, 2, "Test", 1)).thenReturn(Collections.emptyList());
+        Mockito.when(rentalRepository.search("Test", 1)).thenReturn(Collections.emptyList());
 
         MvcResult result = mockMvc.perform(get("/rentals")
-                        .param("start", "1")
-                        .param("end", "2")
-                        .param("carModel", "Test")
+                        .param("q", "Test")
                         .header("Authorization", "Bearer test"))
                 .andExpect(status().isOk())
                 .andReturn();

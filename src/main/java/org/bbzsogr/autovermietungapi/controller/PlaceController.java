@@ -73,12 +73,17 @@ public class PlaceController {
     }
 
     @GetMapping("")
-    public ResponseEntity<Iterable<Place>> getAll(
+    public ResponseEntity<Iterable<Place>> search(
+            @RequestParam String q,
             @RequestHeader("Authorization") String bearer
     ) throws RouteException {
         Claims claims = tokenValidator.decode(bearer).orElseThrow(() -> new RouteException("Invalid token", HttpStatus.UNAUTHORIZED));
         if (!claims.hasPermission("view:place")) throw new RouteException("Permission denied", HttpStatus.FORBIDDEN);
 
-        return ResponseEntity.ok(placeRepository.findAll());
+        try {
+            return ResponseEntity.ok(placeRepository.search(q));
+        } catch (Exception e) {
+            throw new RouteException("Failed to search places", HttpStatus.BAD_REQUEST);
+        }
     }
 }
