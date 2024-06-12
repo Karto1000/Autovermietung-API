@@ -70,6 +70,7 @@ class RentalControllerTest {
                 .build();
 
         Rental rental = Rental.builder()
+                .id(1)
                 .end(1)
                 .start(2)
                 .car(car)
@@ -77,10 +78,8 @@ class RentalControllerTest {
                 .build();
 
         Mockito.doNothing().when(rentalRepository).deleteById(1);
-        Mockito.when(rentalRepository.findByCarIdAndUserId(1, 1)).thenReturn(Optional.of(rental));
+        Mockito.when(rentalRepository.findById(1)).thenReturn(Optional.of(rental));
         Mockito.when(tokenDecoder.decode(any())).thenReturn(Optional.of(claims));
-        Mockito.when(userRepository.findByEmail("admin@admin.com")).thenReturn(Optional.of(user));
-        Mockito.when(carRepository.findById(1)).thenReturn(Optional.of(car));
 
         mockMvc.perform(put(String.format("/rentals/%d/cancel", car.getId()))
                         .header("Authorization", "Bearer test"))
@@ -97,12 +96,6 @@ class RentalControllerTest {
                 .permissions(new String[]{"delete:rental"})
                 .build();
 
-        User user = User.builder()
-                .id(1)
-                .email("admin@admin.com")
-                .role(Role.builder().id(1).name("admin").build())
-                .build();
-
         Car car = Car.builder()
                 .id(1)
                 .model("Test")
@@ -111,10 +104,8 @@ class RentalControllerTest {
                 .build();
 
         Mockito.doNothing().when(rentalRepository).deleteById(1);
-        Mockito.when(rentalRepository.findByCarIdAndUserId(1, 1)).thenReturn(Optional.empty());
+        Mockito.when(rentalRepository.findById(1)).thenReturn(Optional.empty());
         Mockito.when(tokenDecoder.decode(any())).thenReturn(Optional.of(claims));
-        Mockito.when(userRepository.findByEmail("admin@admin.com")).thenReturn(Optional.of(user));
-        Mockito.when(carRepository.findById(1)).thenReturn(Optional.of(car));
 
         mockMvc.perform(put(String.format("/rentals/%d/cancel", car.getId()))
                         .header("Authorization", "Bearer test"))

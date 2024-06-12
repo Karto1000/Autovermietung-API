@@ -53,8 +53,8 @@ public class RentalController {
 
     @GetMapping("")
     public Iterable<Rental> search(
-            @RequestParam Optional<Integer> startOptional,
-            @RequestParam Optional<Integer> endOptional,
+            @RequestParam Optional<Integer> start,
+            @RequestParam Optional<Integer> end,
             @RequestParam String carModel,
             @RequestHeader("Authorization") String bearer
     ) throws RouteException {
@@ -65,11 +65,11 @@ public class RentalController {
                 .findByEmail(claims.getEmail())
                 .orElseThrow(() -> new RouteException("User not found", HttpStatus.NOT_FOUND));
 
-        Integer start = startOptional.orElse(0);
-        Integer end = endOptional.orElse(Integer.MAX_VALUE);
+        Integer unpackedStart = start.orElse(0);
+        Integer unpackedEnd = end.orElse(Integer.MAX_VALUE);
 
         try {
-            return rentalRepository.search(start, end, carModel, user.getId());
+            return rentalRepository.search(unpackedStart, unpackedEnd, carModel, user.getId());
         } catch (Exception e) {
             throw new RouteException(
                     "Error while searching rentals",
