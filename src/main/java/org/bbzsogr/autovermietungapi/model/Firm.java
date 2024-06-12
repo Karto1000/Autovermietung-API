@@ -26,6 +26,7 @@ public class Firm {
     private Place place;
 
     @OneToOne(cascade = CascadeType.REMOVE, orphanRemoval = true)
+    @JoinColumn(nullable = false)
     @OnDelete(action = OnDeleteAction.CASCADE)
     @JsonIgnore
     private User user;

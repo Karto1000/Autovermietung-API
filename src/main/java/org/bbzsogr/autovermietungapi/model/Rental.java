@@ -16,9 +16,11 @@ public class Rental {
     private Integer id;
 
     @ManyToOne
+    @JoinColumn(nullable = false)
     private User user;
 
     @OneToOne
+    @JoinColumn(nullable = false)
     private Car car;
 
     @Column(nullable = false)

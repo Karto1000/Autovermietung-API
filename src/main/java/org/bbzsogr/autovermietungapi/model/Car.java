@@ -34,11 +34,12 @@ public class Car {
     @Lob
     private byte[] picture;
 
-    @ManyToOne
+    @ManyToOne(optional = false)
     private Firm firm;
 
     @OneToOne(mappedBy = "car", cascade = CascadeType.REMOVE)
     @OnDelete(action = OnDeleteAction.CASCADE)
+    @JoinColumn(nullable = false)
     @JsonIgnore
     private Rental rental;
 

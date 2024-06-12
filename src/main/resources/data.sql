@@ -42,6 +42,7 @@ VALUES (2, 4),
 INSERT INTO role_permission (role_id, permission_id)
 VALUES (3, 1),
        (3, 2),
+       (3, 3),
        (3, 4),
        (3, 7),
        (3, 11),
@@ -61,3 +62,6 @@ VALUES (1, 'Place', 4500);
 
 INSERT INTO firm (id, name, user_id, place_id)
 VALUES (1, 'Firm', 3, 1);
+
+INSERT INTO car (id, brand, model, firm_id, price_per_hour)
+VALUES (2, 'Audi', 1, 1, 10);
