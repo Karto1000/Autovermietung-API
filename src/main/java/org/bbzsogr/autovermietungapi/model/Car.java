@@ -30,7 +30,7 @@ public class Car {
     @Column(nullable = false)
     private Double pricePerHour;
 
-    @Column(columnDefinition = "blob")
+    @Column(columnDefinition = "mediumblob")
     @Lob
     private byte[] picture;
 

@@ -1,5 +1,6 @@
 package org.bbzsogr.autovermietungapi.controller;
 
+import jakarta.validation.Valid;
 import org.bbzsogr.autovermietungapi.authentication.JWTTokenGenerator;
 import org.bbzsogr.autovermietungapi.authentication.LoginRequestDao;
 import org.bbzsogr.autovermietungapi.exceptions.RouteException;
@@ -34,7 +35,7 @@ public class AuthController {
     private UserRepository userRepository;
 
     @PostMapping(value = "/login", consumes = "application/json", produces = "application/json")
-    public ResponseEntity<String> login(@RequestBody LoginRequestDao loginRequestDao) throws RouteException {
+    public ResponseEntity<String> login(@RequestBody @Valid LoginRequestDao loginRequestDao) throws RouteException {
         if (!validEmails.contains(loginRequestDao.getEmail()) || !validPasswords.contains(loginRequestDao.getPassword())) {
             throw new RouteException("Invalid credentials", HttpStatus.UNAUTHORIZED);
         }
